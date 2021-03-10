@@ -1,39 +1,25 @@
-import { Field, ObjectType } from "@nestjs/graphql";
+import { ObjectType, Field } from '@nestjs/graphql';
+import { IsString } from 'class-validator';
+import { Column, Entity, ManyToOne, RelationId } from 'typeorm';
+import { CoreEntity } from './core.entity';
+import { Podcast } from './podcast.entity';
 
+@Entity()
 @ObjectType()
-export class Episode {
-  @Field(type => Number)
-  id: number;
-
+export class Episode extends CoreEntity {
+  @Column()
   @Field(type => String)
+  @IsString()
   title: string;
 
+  @Column()
   @Field(type => String)
+  @IsString()
   category: string;
 
-  @Field(type => Number)
-  rating: number;
-}
-
-@ObjectType()
-export class EpisodeType {
-  @Field(type => [Episode])
-  episodes: Episode[];
-
-  @Field(type => String!)
-  err: string | null;
-}
-
-@ObjectType()
-export class CreateEpisodeType {
-  @Field(type => Number!)
-  episdoeId: number | null;
-
-  @Field(type => String!)
-  err: string | null;
-}
-
-@ObjectType()
-export class EpisodeErrorType {
-  err: string | null
+  @ManyToOne(() => Podcast, podcast => podcast.episodes, {
+    onDelete: 'CASCADE',
+  })
+  @Field(type => Podcast)
+  podcast: Podcast;
 }
